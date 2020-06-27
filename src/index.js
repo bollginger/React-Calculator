@@ -1,7 +1,10 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+import { Provider } from 'react-redux'
+import { createStore } from 'redux'
+import rootReducer from './reducers/index'
 import './index.css';
-import Calculator from './components/Calculator';
+import App from './components/App';
 
 // known issues: 
 // 1.exponents lead to scientific notation, which calculator is not equipped to handle.
@@ -9,7 +12,11 @@ import Calculator from './components/Calculator';
 
 // ========================================
 
+const store = createStore(rootReducer)
+
 ReactDOM.render(
-  <Calculator />,
+  <Provider store={store}>
+    <App />
+  </Provider>,
   document.getElementById('root')
 );
