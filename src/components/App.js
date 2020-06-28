@@ -1,35 +1,46 @@
 import React from 'react';
 import Calculator from './Calculator';
 
-var max_display_units = 15;
+const maxDisplayUnits = 15;
+
+// could add "-" to operators and consolidate two loops of func calculate, but need to make sure that
+// calculate will always check for "-" LAST, otherwise it will trigger every time there's a negative number
+const operators = {
+  '+':(x, y) => x+y,
+  '*':(x,y) => x*y,
+  '/':(x,y) => x/y,
+  '^':(x,y) => Math.pow(x,y),
+  '%':(x,y) => x%y
+};
 
 function calculate(display) {
-  var terms = [];
+  let terms = [];
+
   // equation to calculate is always a string in the form of "term1 operator1 term2"
   // the following isolates the terms and determines which operator to apply
   if (isNaN(display)) {
-    if (display.includes('+')) {
-      terms = display.split('+').map(x => parseFloat(x, 10));
-      display = (terms[0] + terms[1]).toString();
-    } else if (display.includes('-')) {
-      terms = display.split('-').map(x => parseFloat(x, 10));
-      display = (terms[0] - terms[1]).toString();
-    } else if (display.includes('*')) {
-      terms = display.split('*').map(x => parseFloat(x, 10));
-      display = (terms[0] * terms[1]).toString();
-    } else if (display.includes('/')) {
-      terms = display.split('/').map(x => parseFloat(x, 10));
-      display = (terms[0] / terms[1]).toString();
-    } else if (display.includes('^')) {
-      terms = display.split('^').map(x => parseFloat(x, 10));
-      display = (terms[0] ** terms[1]).toString();
-    } else if (display.includes('%')) {
-      terms = display.split('%').map(x => parseFloat(x, 10));
-      display = (terms[0] % terms[1]).toString();
+    for (let operator in operators) {
+      if (display.includes(operator)) {
+        terms = display.split(operator).map(x => parseFloat(x, 10));
+        display = operators[operator](terms[0], terms[1]).toString();
+        if (display === "NaN") {display = '0'};
+        if (display === "Infinity") {display = '9'.repeat(maxDisplayUnits)};
+        if (display === "-Infinity") {display = "-" + ('9'.repeat(maxDisplayUnits-1))};
+        return display.slice(0, maxDisplayUnits);
+      }
     }
-    return display.slice(0, max_display_units);
+    // separate loop checks for "-" because it also appears in negative numbers
+    if (display.includes('-')) {
+      terms = display.split('-').map(x => parseFloat(x, 10));
+      // check if first term is negative and correct array
+      if (display.charAt(0) === '-') {
+        terms.shift();
+        terms[0] = '-' + terms[0];
+      };        
+      display = (terms[0] - terms[1]).toString();
+    }
   }
-  return display;
+  return display.slice(0, maxDisplayUnits);
 }
 
 const App = ({ history, display, ...reduce_funcs }) => {
@@ -96,7 +107,7 @@ const App = ({ history, display, ...reduce_funcs }) => {
     if (calculation !== current_display){
       reduce_funcs.addCalculation(calculation);
     }
-    reduce_funcs.updateDisplay(new_display.slice(0, max_display_units));
+    reduce_funcs.updateDisplay(new_display.slice(0, maxDisplayUnits));
   }
 
   return (
@@ -119,4 +130,4 @@ const App = ({ history, display, ...reduce_funcs }) => {
 
 }
 
-export default App;
+export default App

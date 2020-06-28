@@ -21,44 +21,21 @@ class Calculator extends React.Component {
   }
 
   render() {
-    const status = 'TI 2020';
+    let symbols = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 
+    '.', '=', '+', '-', '*', '/', '^', '%', '<-', 'CE'];
 
     return (
       <div>
-        <div className="status">{status}</div>
+        <div className="status">React Calculator</div>
         <div className="calculator-row">
           {this.renderScreen()}
         </div>
-        <div className="calculator-row">
-          {this.renderNumButton('0')}
-          {this.renderNumButton('1')}
-          {this.renderNumButton('2')}
-          {this.renderNumButton('3')}
-        </div>
-        <div className="calculator-row">
-          {this.renderNumButton('4')}
-          {this.renderNumButton('5')}
-          {this.renderNumButton('6')}
-          {this.renderNumButton('7')}
-        </div>
-        <div className="calculator-row">
-          {this.renderNumButton('8')}
-          {this.renderNumButton('9')}
-          {this.renderNumButton('.')}
-          {this.renderNumButton('=')}
-        </div>
-        <div className="calculator-row">
-          {this.renderNumButton('+')}
-          {this.renderNumButton('-')}
-          {this.renderNumButton('*')}
-          {this.renderNumButton('/')}
-        </div>
-        <div className="calculator-row">
-          {this.renderNumButton('^')}
-          {this.renderNumButton('%')}
-          {this.renderNumButton('<-')}
-          {this.renderNumButton('CE')}
-        </div>
+          {symbols.map(symbol => {
+            return (
+            <div>
+              {this.renderNumButton(symbol)}
+            </div>
+            )})}
       </div>
     );
   }
