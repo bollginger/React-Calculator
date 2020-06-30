@@ -2,6 +2,8 @@ import React from 'react';
 import Calculator from './Calculator';
 
 const maxDisplayUnits = 15;
+const maxDisplayNumber = '9'.repeat(maxDisplayUnits);
+const minDisplayNumber = '-' + '9'.repeat(maxDisplayUnits-1);
 
 // could add "-" to operators and consolidate two loops of func calculate, but need to make sure that
 // calculate will always check for "-" LAST, otherwise it will trigger every time there's a negative number
@@ -13,7 +15,24 @@ const operators = {
   '%':(x,y) => x%y
 };
 
-function calculate(display) {
+// convertSciNotation is applied to the result of every calculation. If "e" is contained, converts to
+// non-scientific notation. Otherwise returns string form of number.
+function convertSciNotation (number) {
+  let str = number.toString();
+  let numZeros;
+  if (str.includes("e")){
+    [str, numZeros] = str.split("e");
+      if (str.includes(".")) {
+        str = str + '0'.repeat(numZeros - str.substring(str.indexOf(".")).length);
+          str = str.replace(".", "");
+      } else {
+        str = str + '0'.repeat(numZeros);
+      }
+  }
+  return str;
+}
+
+function calculate (display) {
   let terms = [];
 
   // equation to calculate is always a string in the form of "term1 operator1 term2"
@@ -22,10 +41,10 @@ function calculate(display) {
     for (let operator in operators) {
       if (display.includes(operator)) {
         terms = display.split(operator).map(x => parseFloat(x, 10));
-        display = operators[operator](terms[0], terms[1]).toString();
+        display = convertSciNotation(operators[operator](terms[0], terms[1]));
         if (display === "NaN") {display = '0'};
-        if (display === "Infinity") {display = '9'.repeat(maxDisplayUnits)};
-        if (display === "-Infinity") {display = "-" + ('9'.repeat(maxDisplayUnits-1))};
+        if (Number(display) > Number(maxDisplayNumber)) {display = maxDisplayNumber};
+        if (Number(display) < Number(minDisplayNumber)) {display = minDisplayNumber};
         return display.slice(0, maxDisplayUnits);
       }
     }
